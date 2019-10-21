@@ -6,4 +6,7 @@
   <string name="blackjack_value">21</string>
   <string name="hard_soft_divider">|</string>
   <string name="new_round">New Round</string>
+  <string name="deck_of_cards_base_url">https://deckofcardsapi.com/</string>
+  <string name="image_url_pattern">%1$sstatic/img/%2$s.png</string>
+  <string name="card_content_description">%1$s of %2$s</string>
 </resources>

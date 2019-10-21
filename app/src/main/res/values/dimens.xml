@@ -4,4 +4,6 @@
   <dimen name="activity_padding">8dp</dimen>
   <dimen name="hand_value_margin">8dp</dimen>
   <dimen name="hand_value_size">36sp</dimen>
+  <dimen name="card_width">150dp</dimen>
+  <dimen name="card_overlap">-120dp</dimen>
 </resources>
