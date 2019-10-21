@@ -14,13 +14,14 @@ import edu.cnm.deepdive.blackjack.model.entity.Hand;
 import edu.cnm.deepdive.blackjack.model.entity.Round;
 import edu.cnm.deepdive.blackjack.model.entity.Shoe;
 import edu.cnm.deepdive.blackjack.model.pojo.HandWithCards;
-import edu.cnm.deepdive.blackjack.model.pojo.RoundWithDetails;
 import edu.cnm.deepdive.blackjack.service.BlackjackDatabase;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class MainViewModel extends AndroidViewModel {
 
@@ -30,11 +31,12 @@ public class MainViewModel extends AndroidViewModel {
   private boolean shuffleNeeded;
   private Random rng;
   private MutableLiveData<Long> roundId;
-  private LiveData<RoundWithDetails> round;
+  private LiveData<Round> round;
   private MutableLiveData<Long> dealerHandId;
   private MutableLiveData<Long> playerHandId;
   private LiveData<HandWithCards> dealerHand;
   private LiveData<HandWithCards> playerHand;
+  private ExecutorService executor;
 
   public MainViewModel(@NonNull Application application) {
     super(application);
@@ -42,16 +44,17 @@ public class MainViewModel extends AndroidViewModel {
     rng = new SecureRandom(); // TODO Use Mersenne Twister.
     roundId = new MutableLiveData<>();
     round = Transformations.switchMap(roundId,
-        (id) -> database.getRoundDao().getRoundWithDetails(id));
+        (id) -> database.getRoundDao().getByRoundId(id));
     dealerHandId = new MutableLiveData<>();
     dealerHand = Transformations.switchMap(dealerHandId,
         (id) -> database.getHandDao().getHandWithCards(id));
     playerHandId = new MutableLiveData<>();
     playerHand = Transformations.switchMap(playerHandId,
         (id) -> database.getHandDao().getHandWithCards(id));
+    executor = Executors.newSingleThreadExecutor();
   }
 
-  public LiveData<RoundWithDetails> getRound() {
+  public LiveData<Round> getRound() {
     return round;
   }
 
@@ -90,7 +93,7 @@ public class MainViewModel extends AndroidViewModel {
   }
 
   public void startRound() {
-    new Thread(() -> {
+    executor.submit(() -> {
       Round round = new Round();
       if (shoeId == 0 || shuffleNeeded) {
         createShoe();
@@ -105,25 +108,26 @@ public class MainViewModel extends AndroidViewModel {
       long[] handIds = database.getHandDao().insert(dealer, player);
       for (long handId : handIds) {
         for (int i = 0; i < 2; i++) {
-          Card card = getTopCard(handId);
+          Card card = dealTopCard(handId);
         }
       }
       this.roundId.postValue(roundId);
       this.dealerHandId.postValue(handIds[0]);
       this.playerHandId.postValue(handIds[1]);
-    }).start();
+    });
   }
 
   public void hitPlayer() {
-    new Thread(() -> {
-      CardDao dao = database.getCardDao();
-      Long handId = playerHandId.getValue();
-      Card card = getTopCard(handId);
-      playerHandId.postValue(handId);
-    }).start();
+    executor.submit(() -> {
+      if (getPlayerHand().getValue().getHardValue() < 21) {
+        CardDao dao = database.getCardDao();
+        Long handId = playerHandId.getValue();
+        Card card = dealTopCard(handId);
+      }
+    });
   }
 
-  private Card getTopCard(long handId) {
+  private Card dealTopCard(long handId) {
     CardDao cardDao = database.getCardDao();
     Card card = cardDao.getTopCardInShoe(shoeId);
     card.setShoeId(null);
@@ -136,15 +140,14 @@ public class MainViewModel extends AndroidViewModel {
   }
 
   public void startDealer() {
-    new Thread(() -> {
+    executor.submit(() -> {
       long handId = dealerHandId.getValue();
       HandWithCards dealer = dealerHand.getValue();
       List<Card> cards = dealer.getCards();
       while (dealer.getHardValue() < 17 || dealer.getSoftValue() < 18) {
-        cards.add(getTopCard(handId));
-        dealerHandId.postValue(handId);
+        cards.add(dealTopCard(handId));
       }
-    }).start();
+    });
   }
 
 }

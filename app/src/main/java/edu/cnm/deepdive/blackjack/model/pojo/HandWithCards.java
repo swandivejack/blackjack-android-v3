@@ -10,7 +10,13 @@ import java.util.List;
 public class HandWithCards extends Hand {
 
   @Ignore
-  private boolean hasAce;
+  private final Object lock = new Object();
+  @Ignore
+  private int hardValue;
+  @Ignore
+  private int softValue;
+  @Ignore
+  private int basis;
 
   @Relation(entity = Card.class, entityColumn = "hand_id", parentColumn = "hand_id")
   private List<Card> cards;
@@ -24,20 +30,32 @@ public class HandWithCards extends Hand {
   }
 
   public int getHardValue() {
-    int value = 0;
-    hasAce = false;
-    for (Card card : cards) {
-      value += Math.min(card.getRank().ordinal(), 9) + 1;
-      if (card.getRank() == Rank.ACE) {
-        hasAce = true;
-      }
+    synchronized (lock) {
+      computeValue();
     }
-    return value;
+    return hardValue;
   }
 
   public int getSoftValue() {
-    int hardValue = getHardValue();
-    return hardValue + ((hasAce && hardValue < 12) ? 10 : 0);
+    synchronized (lock) {
+      computeValue();
+    }
+    return softValue;
+  }
+
+  private void computeValue() {
+    if (basis != cards.size()) {
+      basis = cards.size();
+      hardValue = 0;
+      boolean hasAce = false;
+      for (Card card : cards) {
+        hardValue += Math.min(card.getRank().ordinal(), 9) + 1;
+        if (card.getRank() == Rank.ACE) {
+          hasAce = true;
+        }
+      }
+      softValue = hardValue + ((hasAce && hardValue < 12) ? 10 : 0);
+    }
   }
 
 }

@@ -24,9 +24,9 @@ public class PlayerHandFragment extends HandFragment {
     View view = super.onCreateView(inflater, container, savedInstanceState);
     hitMe = view.findViewById(R.id.hit_me);
     hitMe.setOnClickListener((v) -> {
-      if (getHand().getHardValue() < 21) {
-        getViewModel().hitPlayer();
-      }
+      hitMe.hide();
+      stay.hide();
+      getViewModel().hitPlayer();
     });
     stay = view.findViewById(R.id.stay);
     stay.setOnClickListener((v) -> {
@@ -63,6 +63,7 @@ public class PlayerHandFragment extends HandFragment {
       hitMe.show();
       stay.show();
     } else if (hand.getSoftValue() == 21) {
+      staying = true;
       hitMe.hide();
       stay.hide();
       getViewModel().startDealer();
