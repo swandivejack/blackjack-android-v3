@@ -125,7 +125,7 @@ public class MainViewModel extends AndroidViewModel {
 
   public void hitPlayer() {
     executor.submit(() -> {
-      if (getPlayerHand().getValue().getHardValue() < 21) {
+      if (getPlayerHand().getValue().getSoftValue() < 21) {
         CardDao dao = database.getCardDao();
         long handId = playerHandId.getValue();
         draw(handId, 1);
