@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "447777da472ad33a4865ac7d060560ec",
+    "identityHash": "8af2c054210e750cafdc67e9022ec8f3",
     "entities": [
       {
         "tableName": "Card",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`card_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `created` INTEGER NOT NULL, `updated` INTEGER NOT NULL, `shoe_id` INTEGER, `hand_id` INTEGER, `rank` TEXT NOT NULL, `suit` TEXT NOT NULL, FOREIGN KEY(`shoe_id`) REFERENCES `Shoe`(`shoe_id`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`hand_id`) REFERENCES `Hand`(`hand_id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`card_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `created` INTEGER NOT NULL, `hand_id` INTEGER NOT NULL, `rank` TEXT NOT NULL, `suit` TEXT NOT NULL, FOREIGN KEY(`hand_id`) REFERENCES `Hand`(`hand_id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "id",
@@ -21,22 +21,10 @@
             "notNull": true
           },
           {
-            "fieldPath": "updated",
-            "columnName": "updated",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "shoeId",
-            "columnName": "shoe_id",
-            "affinity": "INTEGER",
-            "notNull": false
-          },
-          {
             "fieldPath": "handId",
             "columnName": "hand_id",
             "affinity": "INTEGER",
-            "notNull": false
+            "notNull": true
           },
           {
             "fieldPath": "rank",
@@ -64,23 +52,7 @@
             "columnNames": [
               "created"
             ],
-            "createSql": "CREATE  INDEX `index_Card_created` ON `${TABLE_NAME}` (`created`)"
-          },
-          {
-            "name": "index_Card_updated",
-            "unique": false,
-            "columnNames": [
-              "updated"
-            ],
-            "createSql": "CREATE  INDEX `index_Card_updated` ON `${TABLE_NAME}` (`updated`)"
-          },
-          {
-            "name": "index_Card_shoe_id",
-            "unique": false,
-            "columnNames": [
-              "shoe_id"
-            ],
-            "createSql": "CREATE  INDEX `index_Card_shoe_id` ON `${TABLE_NAME}` (`shoe_id`)"
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_Card_created` ON `${TABLE_NAME}` (`created`)"
           },
           {
             "name": "index_Card_hand_id",
@@ -88,21 +60,10 @@
             "columnNames": [
               "hand_id"
             ],
-            "createSql": "CREATE  INDEX `index_Card_hand_id` ON `${TABLE_NAME}` (`hand_id`)"
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_Card_hand_id` ON `${TABLE_NAME}` (`hand_id`)"
           }
         ],
         "foreignKeys": [
-          {
-            "table": "Shoe",
-            "onDelete": "CASCADE",
-            "onUpdate": "NO ACTION",
-            "columns": [
-              "shoe_id"
-            ],
-            "referencedColumns": [
-              "shoe_id"
-            ]
-          },
           {
             "table": "Hand",
             "onDelete": "CASCADE",
@@ -176,7 +137,7 @@
             "columnNames": [
               "created"
             ],
-            "createSql": "CREATE  INDEX `index_Hand_created` ON `${TABLE_NAME}` (`created`)"
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_Hand_created` ON `${TABLE_NAME}` (`created`)"
           },
           {
             "name": "index_Hand_updated",
@@ -184,7 +145,7 @@
             "columnNames": [
               "updated"
             ],
-            "createSql": "CREATE  INDEX `index_Hand_updated` ON `${TABLE_NAME}` (`updated`)"
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_Hand_updated` ON `${TABLE_NAME}` (`updated`)"
           },
           {
             "name": "index_Hand_round_id",
@@ -192,7 +153,7 @@
             "columnNames": [
               "round_id"
             ],
-            "createSql": "CREATE  INDEX `index_Hand_round_id` ON `${TABLE_NAME}` (`round_id`)"
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_Hand_round_id` ON `${TABLE_NAME}` (`round_id`)"
           },
           {
             "name": "index_Hand_outcome",
@@ -200,7 +161,7 @@
             "columnNames": [
               "outcome"
             ],
-            "createSql": "CREATE  INDEX `index_Hand_outcome` ON `${TABLE_NAME}` (`outcome`)"
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_Hand_outcome` ON `${TABLE_NAME}` (`outcome`)"
           }
         ],
         "foreignKeys": [
@@ -253,7 +214,7 @@
             "columnNames": [
               "created"
             ],
-            "createSql": "CREATE  INDEX `index_Round_created` ON `${TABLE_NAME}` (`created`)"
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_Round_created` ON `${TABLE_NAME}` (`created`)"
           },
           {
             "name": "index_Round_shoe_id",
@@ -261,7 +222,7 @@
             "columnNames": [
               "shoe_id"
             ],
-            "createSql": "CREATE  INDEX `index_Round_shoe_id` ON `${TABLE_NAME}` (`shoe_id`)"
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_Round_shoe_id` ON `${TABLE_NAME}` (`shoe_id`)"
           }
         ],
         "foreignKeys": [
@@ -280,7 +241,7 @@
       },
       {
         "tableName": "Shoe",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`shoe_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `created` INTEGER NOT NULL, `marker_id` INTEGER, FOREIGN KEY(`marker_id`) REFERENCES `Card`(`card_id`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`shoe_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `created` INTEGER NOT NULL, `updated` INTEGER NOT NULL, `shuffle_point` INTEGER NOT NULL, `shoe_key` TEXT NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -295,10 +256,22 @@
             "notNull": true
           },
           {
-            "fieldPath": "markerId",
-            "columnName": "marker_id",
+            "fieldPath": "updated",
+            "columnName": "updated",
             "affinity": "INTEGER",
-            "notNull": false
+            "notNull": true
+          },
+          {
+            "fieldPath": "shufflePoint",
+            "columnName": "shuffle_point",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "shoeKey",
+            "columnName": "shoe_key",
+            "affinity": "TEXT",
+            "notNull": true
           }
         ],
         "primaryKey": {
@@ -309,41 +282,37 @@
         },
         "indices": [
           {
+            "name": "index_Shoe_shoe_key",
+            "unique": true,
+            "columnNames": [
+              "shoe_key"
+            ],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_Shoe_shoe_key` ON `${TABLE_NAME}` (`shoe_key`)"
+          },
+          {
             "name": "index_Shoe_created",
             "unique": false,
             "columnNames": [
               "created"
             ],
-            "createSql": "CREATE  INDEX `index_Shoe_created` ON `${TABLE_NAME}` (`created`)"
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_Shoe_created` ON `${TABLE_NAME}` (`created`)"
           },
           {
-            "name": "index_Shoe_marker_id",
+            "name": "index_Shoe_updated",
             "unique": false,
             "columnNames": [
-              "marker_id"
+              "updated"
             ],
-            "createSql": "CREATE  INDEX `index_Shoe_marker_id` ON `${TABLE_NAME}` (`marker_id`)"
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_Shoe_updated` ON `${TABLE_NAME}` (`updated`)"
           }
         ],
-        "foreignKeys": [
-          {
-            "table": "Card",
-            "onDelete": "NO ACTION",
-            "onUpdate": "NO ACTION",
-            "columns": [
-              "marker_id"
-            ],
-            "referencedColumns": [
-              "card_id"
-            ]
-          }
-        ]
+        "foreignKeys": []
       }
     ],
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '447777da472ad33a4865ac7d060560ec')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '8af2c054210e750cafdc67e9022ec8f3')"
     ]
   }
 }

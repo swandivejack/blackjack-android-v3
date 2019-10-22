@@ -15,6 +15,9 @@ import edu.cnm.deepdive.blackjack.model.entity.Round;
 import edu.cnm.deepdive.blackjack.model.entity.Shoe;
 import edu.cnm.deepdive.blackjack.model.pojo.HandWithCards;
 import edu.cnm.deepdive.blackjack.service.BlackjackDatabase;
+import edu.cnm.deepdive.blackjack.service.DeckOfCardsService;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -67,6 +70,15 @@ public class MainViewModel extends AndroidViewModel {
   }
 
   private void createShoe() {
+    DeckOfCardsService.getInstance().newShoe(6)
+        .subscribeOn(Schedulers.io()) // Sets thread scheduler for task execution
+        .observeOn(AndroidSchedulers.mainThread()) // Sets thread scheduler for returning results.
+        .subscribe((shoe) -> { // Sets lambda to invoke on completion.
+
+          shoeId = database.getShoeDao().insert(shoe);
+        });
+
+
     Shoe shoe = new Shoe();
     shoeId = database.getShoeDao().insert(shoe);
     List<Card> cards = new ArrayList<>();

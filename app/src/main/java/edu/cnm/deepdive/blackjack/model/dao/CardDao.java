@@ -15,9 +15,6 @@ public interface CardDao {
   @Insert
   List<Long> insert(Collection<Card> cards);
 
-  @Query("SELECT * FROM Card WHERE shoe_id = :shoeId ORDER BY card_id ASC LIMIT 1")
-  Card getTopCardInShoe(long shoeId);
-
   @Update
   int update(Card card);
 

@@ -5,19 +5,14 @@ import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 
 import androidx.room.ForeignKey;
+import androidx.room.Ignore;
+import androidx.room.Index;
 import androidx.room.PrimaryKey;
+import androidx.room.util.TableInfo.Column;
+import com.google.gson.annotations.SerializedName;
 import java.util.Date;
 
-@Entity(
-    foreignKeys = {
-        @ForeignKey(
-            entity = Card.class,
-            childColumns = "marker_id",
-            parentColumns = "card_id",
-            onDelete = ForeignKey.NO_ACTION
-        )
-    }
-)
+@Entity(indices = @Index(value = "shoe_key", unique = true))
 public class Shoe {
 
   @PrimaryKey(autoGenerate = true)
@@ -28,8 +23,20 @@ public class Shoe {
   @NonNull
   private Date created = new Date();
 
-  @ColumnInfo(name = "marker_id", index = true)
-  private Long markerId;
+  @ColumnInfo(index = true)
+  @NonNull
+  private Date updated = new Date();
+
+  @ColumnInfo(name = "shuffle_point")
+  private int shufflePoint;
+
+  @SerializedName("deck_id")
+  @NonNull
+  @ColumnInfo(name = "shoe_key")
+  private String shoeKey;
+
+  @Ignore
+  private int remaining;
 
   public long getId() {
     return id;
@@ -48,12 +55,38 @@ public class Shoe {
     this.created = created;
   }
 
-  public Long getMarkerId() {
-    return markerId;
+  @NonNull
+  public Date getUpdated() {
+    return updated;
   }
 
-  public void setMarkerId(Long markerId) {
-    this.markerId = markerId;
+  public void setUpdated(@NonNull Date updated) {
+    this.updated = updated;
+  }
+
+  public int getShufflePoint() {
+    return shufflePoint;
+  }
+
+  public void setShufflePoint(int shufflePoint) {
+    this.shufflePoint = shufflePoint;
+  }
+
+  @NonNull
+  public String getShoeKey() {
+    return shoeKey;
+  }
+
+  public void setShoeKey(@NonNull String shoeKey) {
+    this.shoeKey = shoeKey;
+  }
+
+  public int getRemaining() {
+    return remaining;
+  }
+
+  public void setRemaining(int remaining) {
+    this.remaining = remaining;
   }
 
 }
