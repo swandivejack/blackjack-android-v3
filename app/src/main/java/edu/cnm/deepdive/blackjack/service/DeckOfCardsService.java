@@ -30,15 +30,11 @@ public interface DeckOfCardsService {
   @GET("api/deck/{shoeKey}/shuffle/")
   Single<Shoe> shuffle(@Path("shoeKey") String shoeKey);
 
-  default URL getImageUrl(Card card) {
-    try {
+  static String getImageUrl(Card card) {
       String baseUrl = BuildConfig.BASE_URL;
       String imagePattern = BuildConfig.STATIC_IMAGE_PATTERN;
       String abbreviation = card.getAbbreviation();
-      return new URL(String.format(imagePattern, baseUrl, abbreviation));
-    } catch (MalformedURLException e) {
-      throw new RuntimeException(e);
-    }
+      return String.format(imagePattern, baseUrl, abbreviation);
   }
 
   static DeckOfCardsService getInstance() {

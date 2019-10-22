@@ -21,6 +21,8 @@ import io.reactivex.schedulers.Schedulers;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ExecutorService;
@@ -30,7 +32,8 @@ public class MainViewModel extends AndroidViewModel {
 
   private final BlackjackDatabase database;
   private long shoeId;
-  private long markerId;
+  private int shufflePoint;
+  private String shoeKey;
   private boolean shuffleNeeded;
   private Random rng;
   private MutableLiveData<Long> roundId;
@@ -71,45 +74,38 @@ public class MainViewModel extends AndroidViewModel {
 
   private void createShoe() {
     DeckOfCardsService.getInstance().newShoe(6)
-        .subscribeOn(Schedulers.io()) // Sets thread scheduler for task execution
-        .observeOn(AndroidSchedulers.mainThread()) // Sets thread scheduler for returning results.
+        .subscribeOn(Schedulers.from(executor)) // Sets thread scheduler for task execution
         .subscribe((shoe) -> { // Sets lambda to invoke on completion.
-
+          int start = shoe.getRemaining() / 4;
+          int end = shoe.getRemaining() / 3;
+          shufflePoint = start + rng.nextInt(end - start + 1);
+          shoeKey = shoe.getShoeKey();
+          shoe.setShufflePoint(shufflePoint);
           shoeId = database.getShoeDao().insert(shoe);
+          shuffleNeeded = false;
         });
+  }
 
-
-    Shoe shoe = new Shoe();
-    shoeId = database.getShoeDao().insert(shoe);
-    List<Card> cards = new ArrayList<>();
-    for (int i = 0; i < 6; i++) { // Repeat for # of decks in shoe
-      for (Rank rank : Rank.values()) { // Repeat for each rank
-        for (Suit suit : Suit.values()) { // Repeat for each suit
-          Card card = new Card();
-          card.setShoeId(shoeId);
-          card.setRank(rank);
-          card.setSuit(suit);
-          cards.add(card);
-        }
-      }
-    }
-    Collections.shuffle(cards, rng);
-    int startIndex = cards.size() * 2 / 3;
-    int endIndex = cards.size() * 3 / 4;
-    int markerPosition = startIndex + rng.nextInt(endIndex - startIndex);
-    List<Long> cardIds = database.getCardDao().insert(cards);
-    markerId = cardIds.get(markerPosition);
-    shoe.setMarkerId(markerId);
-    database.getShoeDao().update(shoe);
-    shuffleNeeded = false;
+  private void shuffleShoe() {
+    DeckOfCardsService.getInstance().shuffle(shoeKey)
+        .subscribeOn(Schedulers.from(executor)) // Sets thread scheduler for task execution
+        .subscribe((shoe) -> { // Sets lambda to invoke on completion.
+          int start = shoe.getRemaining() / 4;
+          int end = shoe.getRemaining() / 3;
+          shufflePoint = start + rng.nextInt(end - start + 1);
+          database.getShoeDao().update(shoeId, new Date(), shufflePoint);
+          shuffleNeeded = false;
+        });
   }
 
   public void startRound() {
+    if (shoeId == 0) {
+      createShoe();
+    } else if (shuffleNeeded) {
+      shuffleShoe();
+    }
     executor.submit(() -> {
       Round round = new Round();
-      if (shoeId == 0 || shuffleNeeded) {
-        createShoe();
-      }
       round.setShoeId(shoeId);
       long roundId = database.getRoundDao().insert(round);
       Hand dealer = new Hand();
@@ -119,9 +115,7 @@ public class MainViewModel extends AndroidViewModel {
       player.setRoundId(roundId);
       long[] handIds = database.getHandDao().insert(dealer, player);
       for (long handId : handIds) {
-        for (int i = 0; i < 2; i++) {
-          Card card = dealTopCard(handId);
-        }
+        draw(handId, 2);
       }
       this.roundId.postValue(roundId);
       this.dealerHandId.postValue(handIds[0]);
@@ -133,33 +127,45 @@ public class MainViewModel extends AndroidViewModel {
     executor.submit(() -> {
       if (getPlayerHand().getValue().getHardValue() < 21) {
         CardDao dao = database.getCardDao();
-        Long handId = playerHandId.getValue();
-        Card card = dealTopCard(handId);
+        long handId = playerHandId.getValue();
+        draw(handId, 1);
       }
     });
   }
 
-  private Card dealTopCard(long handId) {
-    CardDao cardDao = database.getCardDao();
-    Card card = cardDao.getTopCardInShoe(shoeId);
-    card.setShoeId(null);
-    card.setHandId(handId);
-    cardDao.update(card);
-    if (card.getId() == markerId) {
-      shuffleNeeded = true;
-    }
-    return card;
+  private void draw(long handId, int count) {
+    DeckOfCardsService.getInstance().draw(shoeKey, count)
+        .subscribeOn(Schedulers.from(executor))
+        .subscribe((draw) -> {
+          for (Card card : draw.getCards()) {
+            card.setHandId(handId);
+          }
+          if (draw.getRemaining() <= shufflePoint) {
+            shuffleNeeded = true;
+          }
+          database.getCardDao().insert(draw.getCards());
+        });
   }
 
   public void startDealer() {
-    executor.submit(() -> {
-      long handId = dealerHandId.getValue();
-      HandWithCards dealer = dealerHand.getValue();
-      List<Card> cards = dealer.getCards();
-      while (dealer.getHardValue() < 17 || dealer.getSoftValue() < 18) {
-        cards.add(dealTopCard(handId));
-      }
-    });
+    HandWithCards dealer = dealerHand.getValue();
+    if (dealer.getSoftValue() < 18 && dealer.getHardValue() < 17) {
+      List<Card> newCards = new LinkedList<>();
+      DeckOfCardsService.getInstance().draw(shoeKey, 1)
+          .repeatUntil(() -> dealer.getHardValue() >= 17 || dealer.getSoftValue() >= 18)
+          .doFinally(() -> database.getCardDao().insert(newCards))
+          .subscribeOn(Schedulers.from(executor))
+          .subscribe((draw) -> {
+            for (Card card : draw.getCards()) {
+              card.setHandId(dealerHandId.getValue());
+            }
+            dealer.getCards().addAll(draw.getCards());
+            newCards.addAll(draw.getCards());
+            if (draw.getRemaining() <= shufflePoint) {
+              shuffleNeeded = true;
+            }
+          });
+    }
   }
 
 }

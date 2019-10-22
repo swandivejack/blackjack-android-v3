@@ -9,6 +9,7 @@ import androidx.room.Query;
 import androidx.room.Update;
 import edu.cnm.deepdive.blackjack.model.entity.Shoe;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 @Dao
@@ -28,6 +29,9 @@ public interface ShoeDao {
 
   @Query("SELECT * FROM Shoe WHERE shoe_id = :shoeId")
   LiveData<Shoe> getById(long shoeId);
+
+  @Query("UPDATE Shoe SET updated = :updated, shuffle_point = :shufflePoint WHERE shoe_id = :shoeId")
+  int update(long shoeId, Date updated, int shufflePoint);
 
   @Update
   int update(Shoe... shoes);
