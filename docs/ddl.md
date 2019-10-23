@@ -1,3 +1,6 @@
+## Data Definition Language (DDL) for data model
+
+```sql
 CREATE TABLE IF NOT EXISTS `Card`
 (
     `card_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
@@ -58,3 +61,6 @@ CREATE UNIQUE INDEX IF NOT EXISTS `index_Shoe_shoe_key` ON `Shoe` (`shoe_key`);
 CREATE INDEX IF NOT EXISTS `index_Shoe_created` ON `Shoe` (`created`);
 
 CREATE INDEX IF NOT EXISTS `index_Shoe_updated` ON `Shoe` (`updated`);
+```
+
+[`ddl.sql`](ddl.sql)

@@ -6,4 +6,6 @@
   <string name="hard_soft_divider">|</string>
   <string name="new_round">New Round</string>
   <string name="card_content_description">%1$s of %2$s</string>
+  <string name="login_failure_message">Unable to log in with provided credentials.</string>
+  <string name="sign_out">Sign out</string>
 </resources>
