@@ -1,14 +1,10 @@
 package edu.cnm.deepdive.blackjack.service;
 
-import android.content.Context;
 import edu.cnm.deepdive.blackjack.BuildConfig;
-import edu.cnm.deepdive.blackjack.R;
 import edu.cnm.deepdive.blackjack.model.entity.Card;
 import edu.cnm.deepdive.blackjack.model.entity.Shoe;
 import edu.cnm.deepdive.blackjack.model.pojo.Draw;
 import io.reactivex.Single;
-import java.net.MalformedURLException;
-import java.net.URL;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import okhttp3.logging.HttpLoggingInterceptor.Level;

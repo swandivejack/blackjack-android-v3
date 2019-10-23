@@ -1,11 +1,10 @@
 package edu.cnm.deepdive.blackjack.controller;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import android.os.Bundle;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import edu.cnm.deepdive.blackjack.R;
 import edu.cnm.deepdive.blackjack.service.GoogleSignInService;
 

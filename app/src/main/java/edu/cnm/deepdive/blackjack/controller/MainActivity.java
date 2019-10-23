@@ -7,8 +7,6 @@ import android.view.MenuItem;
 import android.widget.Button;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProviders;
 import edu.cnm.deepdive.blackjack.R;
 import edu.cnm.deepdive.blackjack.service.GoogleSignInService;
