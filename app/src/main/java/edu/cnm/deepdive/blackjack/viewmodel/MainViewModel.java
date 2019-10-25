@@ -31,13 +31,14 @@ import java.util.concurrent.Executors;
 
 public class MainViewModel extends AndroidViewModel implements LifecycleObserver {
 
-  private static final int DECKS_IN_SHOE = 6; // Change to control via preferences.
+  private static final int DEFAULT_DECKS_IN_SHOE = 6;
 
   private BlackjackDatabase database;
   private Random rng;
   private ExecutorService executor;
   private EnumSet<RoundState.RuleVariation> variations;
   private CompositeDisposable pending = new CompositeDisposable();
+  private int decksPerShoe;
 
   private MutableLiveData<Long> roundId;
   private LiveData<Round> round;
@@ -72,8 +73,9 @@ public class MainViewModel extends AndroidViewModel implements LifecycleObserver
     rng = new SecureRandom();
     executor = Executors.newSingleThreadExecutor();
     pending = new CompositeDisposable();
-    // Change the line below if any rule variations are employed.
+    // Change the lines below if any rule variations are employed.
     variations = EnumSet.noneOf(RoundState.RuleVariation.class);
+    decksPerShoe = DEFAULT_DECKS_IN_SHOE;
   }
 
   private void setupBaseLiveData() {
@@ -124,7 +126,7 @@ public class MainViewModel extends AndroidViewModel implements LifecycleObserver
 
   private void createShoe() {
     pending.add(
-        DeckOfCardsService.getInstance().newShoe(DECKS_IN_SHOE)
+        DeckOfCardsService.getInstance().newShoe(DEFAULT_DECKS_IN_SHOE)
             .subscribeOn(Schedulers.from(executor))
             .subscribe((shoe) -> {
               randomizeShufflePoint(shoe);
@@ -230,7 +232,8 @@ public class MainViewModel extends AndroidViewModel implements LifecycleObserver
     );
   }
 
-  private static class PairOfHandsLiveData extends MediatorLiveData<Pair<HandWithCards, HandWithCards>> {
+  private static class PairOfHandsLiveData extends
+      MediatorLiveData<Pair<HandWithCards, HandWithCards>> {
 
     private PairOfHandsLiveData(LiveData<HandWithCards> dealer, LiveData<HandWithCards> player) {
       addSource(dealer, (hand) -> setValue(Pair.create(hand, player.getValue())));

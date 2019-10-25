@@ -52,29 +52,6 @@ public class CardRecyclerAdapter extends RecyclerView.Adapter<CardHolder> {
     }
   }
 
-  class CardHolder extends RecyclerView.ViewHolder {
-
-    private final ImageView imageView;
-
-    private CardHolder(@NonNull View itemView) {
-      super(itemView);
-      imageView = (ImageView) itemView;
-    }
-
-    private void bind(int position) {
-      if (!complete && hand.isDealer() && hand.getCards().size() <= 2 && position == 0) {
-        imageView.setContentDescription("Hole card");
-        imageView.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.card_back));
-      } else {
-        Card card = hand.getCards().get(position);
-        imageView.setContentDescription(
-            context.getString(R.string.card_content_description, card.getRank(), card.getSuit()));
-        Picasso.get().load(DeckOfCardsService.getImageUrl(card).toString()).into(imageView);
-      }
-    }
-
-  }
-
   public static class OverlapDecoration extends RecyclerView.ItemDecoration {
 
     private final int verticalOffset;
@@ -99,6 +76,29 @@ public class CardRecyclerAdapter extends RecyclerView.Adapter<CardHolder> {
         outRect.set(horizontalOffset, verticalOffset, 0, 0);
       }
     }
+  }
+
+  class CardHolder extends RecyclerView.ViewHolder {
+
+    private final ImageView imageView;
+
+    private CardHolder(@NonNull View itemView) {
+      super(itemView);
+      imageView = (ImageView) itemView;
+    }
+
+    private void bind(int position) {
+      if (!complete && hand.isDealer() && hand.getCards().size() <= 2 && position == 0) {
+        imageView.setContentDescription(context.getString(R.string.hole_card_description));
+        imageView.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.card_back));
+      } else {
+        Card card = hand.getCards().get(position);
+        imageView.setContentDescription(
+            context.getString(R.string.card_content_description, card.getRank(), card.getSuit()));
+        Picasso.get().load(DeckOfCardsService.getImageUrl(card).toString()).into(imageView);
+      }
+    }
+
   }
 
 }

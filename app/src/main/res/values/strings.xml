@@ -11,4 +11,5 @@
   <string name="next_round">Start next round</string>
   <string name="hit_me">Hit me!</string>
   <string name="stay">Stay!</string>
+  <string name="hole_card_description">Hole card</string>
 </resources>
