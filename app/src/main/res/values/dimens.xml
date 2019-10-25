@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-  <dimen name="fab_margin">16dp</dimen>
+  <dimen name="fab_margin">8dp</dimen>
   <dimen name="activity_padding">8dp</dimen>
   <dimen name="hand_value_margin">8dp</dimen>
-  <dimen name="hand_value_size">36sp</dimen>
-  <dimen name="card_width">150dp</dimen>
-  <dimen name="card_overlap">-120dp</dimen>
+  <dimen name="hand_value_size">44sp</dimen>
+  <dimen name="card_width">175dp</dimen>
+  <dimen name="card_overlap">-150dp</dimen>
 </resources>

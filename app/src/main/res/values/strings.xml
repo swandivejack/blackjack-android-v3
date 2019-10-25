@@ -8,4 +8,7 @@
   <string name="card_content_description">%1$s of %2$s</string>
   <string name="login_failure_message">Unable to log in with provided credentials.</string>
   <string name="sign_out">Sign out</string>
+  <string name="next_round">Start next round</string>
+  <string name="hit_me">Hit me!</string>
+  <string name="stay">Stay!</string>
 </resources>

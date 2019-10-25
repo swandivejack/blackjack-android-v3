@@ -5,12 +5,14 @@ import androidx.room.Relation;
 import edu.cnm.deepdive.blackjack.model.entity.Card;
 import edu.cnm.deepdive.blackjack.model.entity.Card.Rank;
 import edu.cnm.deepdive.blackjack.model.entity.Hand;
+import java.util.EnumSet;
 import java.util.List;
 
 public class HandWithCards extends Hand {
 
-  @Ignore
-  private final Object lock = new Object();
+  private static final EnumSet<Rank> BLACKJACK_UP_CARD_RANKS =
+      EnumSet.of(Rank.ACE, Rank.TEN, Rank.JACK, Rank.QUEEN, Rank.KING);
+
   @Ignore
   private int hardValue;
   @Ignore
@@ -29,21 +31,33 @@ public class HandWithCards extends Hand {
     this.cards = cards;
   }
 
+  public boolean isBlackjack() {
+    return (basis == 2 && getSoftValue() == 21);
+  }
+
+  public boolean isPossibleBlackjack() {
+    return (basis == 2 && isDealer() && BLACKJACK_UP_CARD_RANKS.contains(cards.get(1).getRank()));
+  }
+
+  public boolean isBusted() {
+    return getHardValue() > 21;
+  }
+
   public int getHardValue() {
-    synchronized (lock) {
-      computeValue();
-    }
+    computeValue();
     return hardValue;
   }
 
   public int getSoftValue() {
-    synchronized (lock) {
-      computeValue();
-    }
+    computeValue();
     return softValue;
   }
 
-  private void computeValue() {
+  public boolean isSoft() {
+    return getHardValue() < getSoftValue();
+  }
+
+  private synchronized void computeValue() {
     if (basis != cards.size()) {
       basis = cards.size();
       hardValue = 0;

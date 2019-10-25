@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "8af2c054210e750cafdc67e9022ec8f3",
+    "identityHash": "f00279d7c92765ef775700c971beb4c0",
     "entities": [
       {
         "tableName": "Card",
@@ -79,7 +79,7 @@
       },
       {
         "tableName": "Hand",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`hand_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `created` INTEGER NOT NULL, `updated` INTEGER NOT NULL, `dealer` INTEGER NOT NULL, `round_id` INTEGER NOT NULL, `wager` INTEGER NOT NULL, `outcome` TEXT, FOREIGN KEY(`round_id`) REFERENCES `Round`(`round_id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`hand_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `created` INTEGER NOT NULL, `updated` INTEGER NOT NULL, `dealer` INTEGER NOT NULL, `staying` INTEGER NOT NULL, `round_id` INTEGER NOT NULL, `wager` INTEGER NOT NULL, `outcome` TEXT, FOREIGN KEY(`round_id`) REFERENCES `Round`(`round_id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "id",
@@ -102,6 +102,12 @@
           {
             "fieldPath": "dealer",
             "columnName": "dealer",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "staying",
+            "columnName": "staying",
             "affinity": "INTEGER",
             "notNull": true
           },
@@ -312,7 +318,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '8af2c054210e750cafdc67e9022ec8f3')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'f00279d7c92765ef775700c971beb4c0')"
     ]
   }
 }

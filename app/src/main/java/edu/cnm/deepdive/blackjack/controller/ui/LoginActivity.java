@@ -1,4 +1,4 @@
-package edu.cnm.deepdive.blackjack.controller;
+package edu.cnm.deepdive.blackjack.controller.ui;
 
 import android.content.Intent;
 import android.os.Bundle;

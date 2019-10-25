@@ -7,23 +7,25 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.State;
 import com.squareup.picasso.Picasso;
 import edu.cnm.deepdive.blackjack.R;
 import edu.cnm.deepdive.blackjack.model.entity.Card;
+import edu.cnm.deepdive.blackjack.model.pojo.HandWithCards;
 import edu.cnm.deepdive.blackjack.service.DeckOfCardsService;
 import edu.cnm.deepdive.blackjack.view.CardRecyclerAdapter.CardHolder;
-import java.util.List;
 
 public class CardRecyclerAdapter extends RecyclerView.Adapter<CardHolder> {
 
   private final Context context;
-  private final List<Card> cards;
+  private final HandWithCards hand;
+  private boolean complete;
 
-  public CardRecyclerAdapter(Context context, List<Card> cards) {
+  public CardRecyclerAdapter(Context context, HandWithCards hand) {
     this.context = context;
-    this.cards = cards;
+    this.hand = hand;
   }
 
   @NonNull
@@ -35,12 +37,19 @@ public class CardRecyclerAdapter extends RecyclerView.Adapter<CardHolder> {
 
   @Override
   public void onBindViewHolder(@NonNull CardHolder holder, int position) {
-    holder.bind(cards.get(position));
+    holder.bind(position);
   }
 
   @Override
   public int getItemCount() {
-    return cards.size();
+    return hand.getCards().size();
+  }
+
+  public void setComplete(boolean complete) {
+    this.complete = complete;
+    if (complete) {
+      notifyItemChanged(0);
+    }
   }
 
   class CardHolder extends RecyclerView.ViewHolder {
@@ -52,10 +61,16 @@ public class CardRecyclerAdapter extends RecyclerView.Adapter<CardHolder> {
       imageView = (ImageView) itemView;
     }
 
-    private void bind(Card card) {
-      imageView.setContentDescription(
-          context.getString(R.string.card_content_description, card.getRank(), card.getSuit()));
-      Picasso.get().load(DeckOfCardsService.getImageUrl(card).toString()).into(imageView);
+    private void bind(int position) {
+      if (!complete && hand.isDealer() && hand.getCards().size() <= 2 && position == 0) {
+        imageView.setContentDescription("Hole card");
+        imageView.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.card_back));
+      } else {
+        Card card = hand.getCards().get(position);
+        imageView.setContentDescription(
+            context.getString(R.string.card_content_description, card.getRank(), card.getSuit()));
+        Picasso.get().load(DeckOfCardsService.getImageUrl(card).toString()).into(imageView);
+      }
     }
 
   }

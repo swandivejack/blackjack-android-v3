@@ -1,12 +1,9 @@
-package edu.cnm.deepdive.blackjack.controller;
+package edu.cnm.deepdive.blackjack.controller.ui;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -16,7 +13,6 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import edu.cnm.deepdive.blackjack.R;
-import edu.cnm.deepdive.blackjack.model.entity.Card;
 import edu.cnm.deepdive.blackjack.model.pojo.HandWithCards;
 import edu.cnm.deepdive.blackjack.view.CardRecyclerAdapter;
 import edu.cnm.deepdive.blackjack.view.CardRecyclerAdapter.OverlapDecoration;
@@ -25,6 +21,7 @@ import edu.cnm.deepdive.blackjack.viewmodel.MainViewModel;
 public abstract class HandFragment extends Fragment {
 
   private MainViewModel viewModel;
+  private CardRecyclerAdapter adapter;
   private TextView bustedValue;
   private TextView hardValue;
   private TextView hardSoftDivider;
@@ -53,33 +50,41 @@ public abstract class HandFragment extends Fragment {
   @Override
   public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
+    setupObservers();
+  }
+
+  protected void setupObservers() {
     viewModel = ViewModelProviders.of(getActivity()).get(MainViewModel.class);
     handToObserve(viewModel).observe(this, (hand) -> {
       this.hand = hand;
-      CardRecyclerAdapter adapter = new CardRecyclerAdapter(getContext(), hand.getCards());
+      adapter = new CardRecyclerAdapter(getContext(), hand);
       cards.setAdapter(adapter);
       updateValues(hand);
+    });
+    viewModel.getState().observe(this, (state) -> {
+      if (adapter != null) {
+        adapter.setComplete(state.isTerminal());
+      }
     });
   }
 
   protected void updateValues(HandWithCards hand) {
     int hard = hand.getHardValue();
     int soft = hand.getSoftValue();
-    int numberCards = hand.getCards().size();
     hardValue.setVisibility(View.GONE);
     hardSoftDivider.setVisibility(View.GONE);
     softValue.setVisibility(View.GONE);
     blackjackValue.setVisibility(View.GONE);
     bustedValue.setVisibility(View.GONE);
-    if (hard > 21) {
+    if (hand.isBusted()) {
       bustedValue.setText(Integer.toString(hard));
       bustedValue.setVisibility(View.VISIBLE);
-    } else if (soft == 21 && numberCards == 2) {
+    } else if (hand.isBlackjack()) {
       blackjackValue.setVisibility(View.VISIBLE);
     } else {
       hardValue.setText(Integer.toString(hard));
       hardValue.setVisibility(View.VISIBLE);
-      if (soft > hard) {
+      if (hand.isSoft()) {
         softValue.setText(Integer.toString(soft));
         softValue.setVisibility(View.VISIBLE);
         hardSoftDivider.setVisibility(View.VISIBLE);

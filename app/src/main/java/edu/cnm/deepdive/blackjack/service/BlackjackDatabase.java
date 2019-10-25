@@ -1,11 +1,14 @@
 package edu.cnm.deepdive.blackjack.service;
 
 import android.app.Application;
+import androidx.annotation.NonNull;
 import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.room.TypeConverter;
 import androidx.room.TypeConverters;
+import androidx.room.migration.Migration;
+import androidx.sqlite.db.SupportSQLiteDatabase;
 import edu.cnm.deepdive.blackjack.model.dao.CardDao;
 import edu.cnm.deepdive.blackjack.model.dao.HandDao;
 import edu.cnm.deepdive.blackjack.model.dao.RoundDao;
@@ -50,7 +53,8 @@ public abstract class BlackjackDatabase extends RoomDatabase {
 
     static {
       INSTANCE =
-          Room.databaseBuilder(applicationContext, BlackjackDatabase.class, "blackjack_db").build();
+          Room.databaseBuilder(applicationContext, BlackjackDatabase.class, "blackjack_db")
+              .build();
     }
 
   }

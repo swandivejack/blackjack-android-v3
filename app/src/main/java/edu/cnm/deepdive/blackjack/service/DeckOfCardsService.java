@@ -42,6 +42,7 @@ public interface DeckOfCardsService {
     private static final DeckOfCardsService INSTANCE;
 
     static {
+      // TODO Skip creation of interceptor and client for production.
       HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
       interceptor.setLevel(Level.BODY);
       OkHttpClient client = new OkHttpClient.Builder()
@@ -51,7 +52,7 @@ public interface DeckOfCardsService {
           .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
           .addConverterFactory(GsonConverterFactory.create())
           .baseUrl(BuildConfig.BASE_URL)
-          .client(client)
+          .client(client) // TODO Leave this out for production.
           .build();
       INSTANCE = retrofit.create(DeckOfCardsService.class);
     }

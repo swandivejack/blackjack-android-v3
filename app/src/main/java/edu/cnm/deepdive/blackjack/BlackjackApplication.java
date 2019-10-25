@@ -15,7 +15,7 @@ public class BlackjackApplication extends Application {
     Stetho.initializeWithDefaults(this);
     Picasso.setSingletonInstance(
         new Picasso.Builder(this)
-            .loggingEnabled(true)
+            .loggingEnabled(true) // Disable for production
             .build()
     );
     BlackjackDatabase.setApplicationContext(this);

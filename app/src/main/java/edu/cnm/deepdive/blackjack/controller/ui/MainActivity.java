@@ -1,9 +1,10 @@
-package edu.cnm.deepdive.blackjack.controller;
+package edu.cnm.deepdive.blackjack.controller.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Button;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -14,13 +15,14 @@ import edu.cnm.deepdive.blackjack.viewmodel.MainViewModel;
 
 public class MainActivity extends AppCompatActivity {
 
+  private MainViewModel viewModel;
+
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
-    MainViewModel viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
-    Button addDeck = findViewById(R.id.start_round);
-    addDeck.setOnClickListener((view) -> viewModel.startRound());
+    viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
+    getLifecycle().addObserver(viewModel);
   }
 
   @Override

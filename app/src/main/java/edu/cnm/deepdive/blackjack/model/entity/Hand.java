@@ -33,6 +33,8 @@ public class Hand {
 
   private boolean dealer;
 
+  private boolean staying;
+
   @ColumnInfo(name = "round_id", index = true)
   private long roundId;
 
@@ -73,6 +75,14 @@ public class Hand {
 
   public void setDealer(boolean dealer) {
     this.dealer = dealer;
+  }
+
+  public boolean isStaying() {
+    return staying;
+  }
+
+  public void setStaying(boolean staying) {
+    this.staying = staying;
   }
 
   public long getRoundId() {
