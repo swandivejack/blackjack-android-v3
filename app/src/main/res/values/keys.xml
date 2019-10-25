@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="decks_per_shoe_key">decks_per_shoe_key</string>
+  <string name="rule_soft_17">stand_soft_17</string>
+  <string name="rule_no_hold_card">no_hold_card</string>
+</resources>
