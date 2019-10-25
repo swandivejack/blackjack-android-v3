@@ -255,21 +255,17 @@ public class MainViewModel extends AndroidViewModel implements LifecycleObserver
   }
 
 
-  public void readSettings(){
+  public void readSettings() {
 
     boolean useSoft17 = preferences.getBoolean(ruleSoft17Key, false);
     boolean useNoHoldCard = preferences.getBoolean(ruleNoHoldCardKey, false);
     decksPerShoe = preferences.getInt(decksInShoeKey, DEFAULT_DECKS_IN_SHOE);
-
-    if(!useSoft17 && !useNoHoldCard){
-      variations = EnumSet.noneOf(RoundState.RuleVariation.class);
-    }else{
-      if(useNoHoldCard){
-        variations.add(RuleVariation.NO_HOLE_CARD);
-      }
-      if(useSoft17){
-        variations.add(RuleVariation.STAND_ON_SOFT_17);
-      }
+    variations = EnumSet.noneOf(RoundState.RuleVariation.class);
+    if (useNoHoldCard) {
+      variations.add(RuleVariation.NO_HOLE_CARD);
+    }
+    if (useSoft17) {
+      variations.add(RuleVariation.STAND_ON_SOFT_17);
     }
   }
 
