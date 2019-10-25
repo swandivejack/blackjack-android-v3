@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProviders;
 import edu.cnm.deepdive.blackjack.R;
+import edu.cnm.deepdive.blackjack.controller.fsm.SettingsActivity;
 import edu.cnm.deepdive.blackjack.service.GoogleSignInService;
 import edu.cnm.deepdive.blackjack.viewmodel.MainViewModel;
 
@@ -35,9 +36,14 @@ public class MainActivity extends AppCompatActivity {
   @Override
   public boolean onOptionsItemSelected(@NonNull MenuItem item) {
     boolean handled = true;
+    Intent intent;
     switch (item.getItemId()) {
       case R.id.sign_out:
         signOut();
+        break;
+      case R.id.user_settings:
+        intent = new Intent(this, SettingsActivity.class);
+        startActivity(intent);
         break;
       default:
         handled = super.onOptionsItemSelected(item);

@@ -1,6 +1,8 @@
 package edu.cnm.deepdive.blackjack.viewmodel;
 
 import android.app.Application;
+import android.content.SharedPreferences;
+import android.content.res.Resources;
 import androidx.annotation.NonNull;
 import androidx.core.util.Pair;
 import androidx.lifecycle.AndroidViewModel;
@@ -11,7 +13,10 @@ import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.OnLifecycleEvent;
 import androidx.lifecycle.Transformations;
+import androidx.preference.PreferenceManager;
+import edu.cnm.deepdive.blackjack.R;
 import edu.cnm.deepdive.blackjack.controller.fsm.RoundState;
+import edu.cnm.deepdive.blackjack.controller.fsm.RoundState.RuleVariation;
 import edu.cnm.deepdive.blackjack.model.entity.Card;
 import edu.cnm.deepdive.blackjack.model.entity.Hand;
 import edu.cnm.deepdive.blackjack.model.entity.Round;
@@ -29,7 +34,8 @@ import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class MainViewModel extends AndroidViewModel implements LifecycleObserver {
+public class MainViewModel extends AndroidViewModel implements LifecycleObserver,
+    SharedPreferences.OnSharedPreferenceChangeListener {
 
   private static final int DEFAULT_DECKS_IN_SHOE = 6;
 
@@ -39,6 +45,10 @@ public class MainViewModel extends AndroidViewModel implements LifecycleObserver
   private EnumSet<RoundState.RuleVariation> variations;
   private CompositeDisposable pending = new CompositeDisposable();
   private int decksPerShoe;
+  private SharedPreferences preferences;
+  private String decksInShoeKey;
+  private String ruleSoft17Key;
+  private String ruleNoHoldCardKey;
 
   private MutableLiveData<Long> roundId;
   private LiveData<Round> round;
@@ -57,7 +67,7 @@ public class MainViewModel extends AndroidViewModel implements LifecycleObserver
 
   public MainViewModel(@NonNull Application application) {
     super(application);
-    setupUtilityFields();
+    setupUtilityFields(application);
     setupBaseLiveData();
     setupMappedLiveData();
     startRound();
@@ -68,14 +78,19 @@ public class MainViewModel extends AndroidViewModel implements LifecycleObserver
     pending.clear();
   }
 
-  private void setupUtilityFields() {
+  private void setupUtilityFields(Application application) {
     database = BlackjackDatabase.getInstance();
     rng = new SecureRandom();
     executor = Executors.newSingleThreadExecutor();
     pending = new CompositeDisposable();
     // Change the lines below if any rule variations are employed.
-    variations = EnumSet.noneOf(RoundState.RuleVariation.class);
-    decksPerShoe = DEFAULT_DECKS_IN_SHOE;
+    Resources res = application.getResources();
+    preferences = PreferenceManager.getDefaultSharedPreferences(application);
+    preferences.registerOnSharedPreferenceChangeListener(this);
+    decksInShoeKey = res.getString(R.string.decks_per_shoe_key);
+    ruleNoHoldCardKey = res.getString(R.string.rule_no_hold_card);
+    ruleSoft17Key = res.getString(R.string.rule_soft_17);
+    readSettings();
   }
 
   private void setupBaseLiveData() {
@@ -231,6 +246,33 @@ public class MainViewModel extends AndroidViewModel implements LifecycleObserver
             })
     );
   }
+
+  @Override
+  public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
+    readSettings();
+    disposePending();
+    startRound();
+  }
+
+
+  public void readSettings(){
+
+    boolean useSoft17 = preferences.getBoolean(ruleSoft17Key, false);
+    boolean useNoHoldCard = preferences.getBoolean(ruleNoHoldCardKey, false);
+    decksPerShoe = preferences.getInt(decksInShoeKey, DEFAULT_DECKS_IN_SHOE);
+
+    if(!useSoft17 && !useNoHoldCard){
+      variations = EnumSet.noneOf(RoundState.RuleVariation.class);
+    }else{
+      if(useNoHoldCard){
+        variations.add(RuleVariation.NO_HOLE_CARD);
+      }
+      if(useSoft17){
+        variations.add(RuleVariation.STAND_ON_SOFT_17);
+      }
+    }
+  }
+
 
   private static class PairOfHandsLiveData extends
       MediatorLiveData<Pair<HandWithCards, HandWithCards>> {

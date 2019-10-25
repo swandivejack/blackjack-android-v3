@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <integer name="decks_in_shoe_min">1</integer>
+  <integer name="decks_in_shoe_def">6</integer>
+  <integer name="decks_in_shoe_max">10</integer>
+  
+</resources>

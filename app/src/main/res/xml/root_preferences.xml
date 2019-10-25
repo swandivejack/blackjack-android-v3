@@ -1,0 +1,48 @@
+<!--
+  ~ Copyright 2018 The app Open Source Project
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~      http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+
+  <PreferenceCategory android:title="Deck Rules">
+
+    <SeekBarPreference
+      android:defaultValue="@integer/decks_in_shoe_def"
+      android:key="@string/decks_per_shoe_key"
+      android:max="@integer/decks_in_shoe_max"
+      android:summary="The number of decks of cards in the dealer's shoe"
+      android:title="Decks Per Shoe"
+      app:min="@integer/decks_in_shoe_min"
+      app:showSeekBarValue="true"/>
+
+
+  </PreferenceCategory>
+
+  <PreferenceCategory app:title="Dealer Rules">
+
+    <SwitchPreferenceCompat
+      app:key="@string/rule_soft_17"
+      app:title="Dealer Stands on Soft 17"
+      android:summary="The dealer will not hit on a soft 17."/>
+
+    <SwitchPreferenceCompat
+      app:key="@string/rule_no_hold_card"
+      app:title="Dealer Uses No Hold Card"
+      android:summary="The dealer does not examine its hold card."/>
+
+  </PreferenceCategory>
+
+</PreferenceScreen>

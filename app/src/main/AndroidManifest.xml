@@ -2,28 +2,27 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
   package="edu.cnm.deepdive.blackjack">
 
+  <uses-permission android:name="android.permission.INTERNET" />
+
   <application
+    android:name=".BlackjackApplication"
     android:allowBackup="false"
     android:icon="@mipmap/ic_launcher"
     android:label="@string/app_name"
-    android:name=".BlackjackApplication"
     android:roundIcon="@mipmap/ic_launcher_round"
     android:supportsRtl="true"
     android:theme="@style/AppTheme">
-
+    <activity
+      android:name=".controller.fsm.SettingsActivity"
+      android:label="@string/title_activity_settings"></activity>
     <activity android:name=".controller.ui.LoginActivity">
       <intent-filter>
-        <action android:name="android.intent.action.MAIN"/>
+        <action android:name="android.intent.action.MAIN" />
 
-        <category android:name="android.intent.category.LAUNCHER"/>
+        <category android:name="android.intent.category.LAUNCHER" />
       </intent-filter>
     </activity>
-
-    <activity android:name=".controller.ui.MainActivity">
-    </activity>
-
+    <activity android:name=".controller.ui.MainActivity"></activity>
   </application>
-
-  <uses-permission android:name="android.permission.INTERNET"/>
 
 </manifest>
